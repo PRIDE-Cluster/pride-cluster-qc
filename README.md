@@ -25,12 +25,12 @@ The script for the Peptides Report (.tsv files) is in this repo in github().
 
 Information about: This pipeline generate a html file with the following information:
 
-    - Repeated Sequences Results: This should be always 0.3.
-   - Number of peptides and their increase or decrease.
-  -   Peptides with modifications, with non-modifications and their increase or decrease.
-   -  The sequences, modifications, projects, clusters and spectra of the new peptides in the current release.
-  -  A comparative modifications bar plot of the current version and the previous one.
-  -  The frequency of each modification.
+  - Repeated Sequences Results: This should be always 0.
+  - Number of peptides and their increase or decrease.
+  - Peptides with modifications, with non-modifications and their increase or decrease.
+  - The sequences, modifications, projects, clusters and spectra of the new peptides in the current release.
+  - A comparative modifications bar plot of the current version and the previous one.
+  - The frequency of each modification.
 
 To run the script QC_metrics_report.Rmd, this should be in the folder /nfs/pride/work/cluster.
 
