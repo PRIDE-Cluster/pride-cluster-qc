@@ -1,0 +1,378 @@
+---
+title: "**QC metrics MGF**"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+# PRIDE Cluster clusters all MS/MS spectra submitted to PRIDE Archive repository release: 2015-04
+# http://www.ebi.ac.uk/pride/cluster/
+
+# Description:The present script provides a reliable QC (Quality control) report about MGF files generated. 
+# This script must be in the folder /nfs/nobackup/pride/cluster-prod/archive_spectra 
+
+```
+
+```{r, include=FALSE}
+# Upload packages
+packages <- c( "ggplot2", "scales", "knitr", "markdown", "tidyr", "rmarkdown","gridExtra", "stringr","data.table")
+if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
+    install.packages(setdiff(packages, rownames(installed.packages())))  }
+
+
+library("ggplot2"); library("scales"); library("knitr"); library("markdown"); 
+library("tidyr"); library("rmarkdown"); library("gridExtra"); library("stringr"); library("data.table")
+```
+
+### **Number of files:**
+#### **Release 1**
+
+```{r, echo=FALSE}
+
+#REPLACE RELEASE 2 WITH THE PATH OF THE NEW RELEASE
+release1_iden <- "/nfs/nobackup/pride/cluster-prod/archive_spectra/archive_identified_2016-10"
+release1_unid <- "/nfs/nobackup/pride/cluster-prod/archive_spectra/archive_unidentified_2016-10"
+
+release2_iden <- "/nfs/nobackup/pride/cluster-prod/archive_spectra/archive_identified_2016-10"
+release2_unid <- "/nfs/nobackup/pride/cluster-prod/archive_spectra/archive_unidentified_2016-10"
+
+# release1_iden <- "~/Dropbox/Script_R_Cambridge/Script2/archive_identified_2016-10"
+# release1_unid <- "~/Dropbox/Script_R_Cambridge/Script2/archive_unidentified_2016-10"
+# 
+# release2_iden <- "~/Dropbox/Script_R_Cambridge/Script2/archive_identified_2016-10"
+# release2_unid <- "~/Dropbox/Script_R_Cambridge/Script2/archive_unidentified_2016-10"
+```
+
+
+```{r, echo=FALSE, results='asis'}
+
+#Count files how many files are in the folder. 
+#Load files from last 
+#file_all <- list.files(file.path(getwd(), "testall"), pattern = "\\.mgf$") 
+file_iden <- list.files(file.path(getwd(), "archive_identified_2016-10"), pattern = "\\.mgf$") 
+file_unide <- list.files(file.path(getwd(), "archive_unidentified_2016-10"), pattern = "\\.mgf$")
+
+#**NEW RELEASE**. REPLACE WITH THE NEW FOLDER. 
+file_iden2 <- list.files(file.path(getwd(), "archive_identified_2016-10"), pattern = "\\.mgf$") 
+file_unide2 <- list.files(file.path(getwd(), "archive_unidentified_2016-10"), pattern = "\\.mgf$")
+
+#Create a data frame with the data obtained: 
+df.test <- data.frame(Types = c("Total", "Identify", "Unidentify" ), Spectra= c((length(file_iden)+length(file_unide)), length(file_iden),length(file_unide)))
+
+df.test2 <- data.frame(Types = c("Total", "Identify", "Unidentify"), Spectra= c((length(file_iden2)+length(file_unide2)), length(file_iden2),length(file_unide2)))
+
+kable(df.test, padding = 0)
+
+
+```
+
+
+#### **Release 2**
+
+```{r, echo=FALSE, results='asis'}
+kable(df.test2, padding = 0)
+
+```
+
+```{r, echo=FALSE, fig.width=10 }
+#Create the pie chart
+
+df.id_and_uni <- data.frame(Types = c("Identify", "Unidentify"), Spectra= c(length(file_iden),length(file_unide)) )
+df.id_and_uni2 <- data.frame(Types = c("Identify", "Unidentify"), Spectra= c(length(file_iden2),length(file_unide2)) )
+
+
+a <- ggplot(transform(transform(df.id_and_uni, Spectra=Spectra/sum(Spectra)), labPos=cumsum(Spectra)-Spectra/2), 
+            aes(x="", y = Spectra, fill = Types)) +
+    geom_bar(width = 1, stat = "identity") +
+    ggtitle("Release 1") +
+    coord_polar(theta = "y") +
+    geom_text(aes(y=labPos, label=scales::percent(Spectra)), size=7)
+
+b <- ggplot(transform(transform(df.id_and_uni2, Spectra=Spectra/sum(Spectra)), labPos=cumsum(Spectra)-Spectra/2), 
+            aes(x="", y = Spectra, fill = Types)) +
+    geom_bar(width = 1, stat = "identity") +
+    ggtitle("Release 2") +
+    coord_polar(theta = "y") +
+    geom_text(aes(y=labPos, label=scales::percent(Spectra)), size=7)
+
+grid.arrange(a, b, ncol=2)
+```
+
+```{r, echo=FALSE}
+# create a list of files in the current working directory. CHANGE PATH
+#setwd("~/Dropbox/Script_R_Cambridge/Script2/testall")
+#list_of_all <- file.info(dir())
+#REPLACE RELEASE 2 WITH THE PATH OF THE NEW RELEASE
+
+
+setwd(release1_iden)
+list_of_iden <- file.info(dir())
+setwd(release1_unid)
+list_of_unid <- file.info(dir())
+
+setwd(release2_iden)
+list_of_iden2 <- file.info(dir())
+setwd(release2_unid)
+list_of_unid2 <- file.info(dir())
+
+
+# get the size for each file
+#setwd("~/Dropbox/Script_R_Cambridge/Script2/testall")
+#size_all <- file.info(dir(path = "~/Dropbox/Script_R_Cambridge/Script2/testall"))$size
+setwd(release1_iden)
+size_iden <- file.info(dir(path = release1_iden))$size
+setwd(release1_unid)
+size_uniden <- file.info(dir(path = release1_unid))$size
+
+setwd(release2_iden)
+size_iden2 <- file.info(dir(path = release2_iden))$size
+setwd(release1_unid)
+size_uniden2 <- file.info(dir(path = release2_unid))$size
+
+
+
+# subset the files that have non-zero size
+#all_with_data <-  rownames(list_of_all)[which(size_all != 0)]
+iden_with_data <-  rownames(list_of_iden)[which(size_iden != 0)]
+unid_with_data <-  rownames(list_of_unid)[which(size_uniden != 0)]
+
+iden_with_data2 <-  rownames(list_of_iden2)[which(size_iden2 != 0)]
+unid_with_data2 <-  rownames(list_of_unid2)[which(size_uniden2 != 0)]
+
+
+# get the empty files
+#all_without_data <-  rownames(list_of_all)[which(size_all == 0)]
+iden_without_data <-  rownames(list_of_iden)[which(size_iden == 0)]
+unid_without_data <-  rownames(list_of_unid)[which(size_uniden == 0)]
+
+iden_without_data2 <-  rownames(list_of_iden2)[which(size_iden2 == 0)]
+unid_without_data2 <-  rownames(list_of_unid2)[which(size_uniden2 == 0)]
+
+```
+
+### **Files with data**
+
+#### **Release 1**
+
+```{r, echo=FALSE, results='asis'}
+#plot with data.
+
+df_with_data_all <- data.frame(Types = c("Total", "Identify", "Unidentify"), Spectra= c((length(iden_with_data)+length(unid_with_data)),length(iden_with_data),length(unid_with_data)) )
+
+kable(df_with_data_all, padding = 0)
+```
+#### **Release 2**
+
+```{r, echo=FALSE, results='asis' }
+
+df_with_data_all2 <- data.frame(Types = c("Total", "Identify", "Unidentify"), Spectra= c((length(iden_with_data2)+length(unid_with_data2)),length(iden_with_data2),length(unid_with_data2)) )
+kable(df_with_data_all, padding = 0)
+
+```
+
+```{r, echo=FALSE, fig.width=10 }
+
+df_with_data <- data.frame(Types = c("Identify", "Unidentify"), Spectra= c(length(iden_with_data),length(unid_with_data)) )
+
+df_with_data2 <- data.frame(Types = c("Identify", "Unidentify"), Spectra= c(length(iden_with_data2),length(unid_with_data2)) )
+
+a <- ggplot(transform(transform(df_with_data , Spectra=Spectra/sum(Spectra)), labPos=cumsum(Spectra)-Spectra/2),        aes(x="", y = Spectra, fill = Types)) +
+    geom_bar(width = 1, stat = "identity") +
+    coord_polar(theta = "y") +
+    geom_text(aes(y=labPos, label=scales::percent(Spectra)), size=7)
+
+b <- ggplot(transform(transform(df_with_data2 , Spectra=Spectra/sum(Spectra)), labPos=cumsum(Spectra)-Spectra/2),        aes(x="", y = Spectra, fill = Types)) +
+    geom_bar(width = 1, stat = "identity") +
+    coord_polar(theta = "y") +
+    geom_text(aes(y=labPos, label=scales::percent(Spectra)), size=7)
+
+grid.arrange(a, b, ncol=2)
+```
+
+### **Files without data**
+
+#### **Release 1**
+
+```{r, echo=FALSE}
+#without data. 
+df_without_data_all <- data.frame(Types = c("Total", "Identify", "Unidentify"), Spectra= c((length(iden_without_data)+length(unid_without_data)),length(iden_without_data),length(unid_without_data)) )
+kable(df_without_data_all,padding = 0)
+
+```
+
+#### **Release 2**
+
+```{r, echo=FALSE }
+df_without_data_all2 <- data.frame(Types = c("Total", "Identify", "Unidentify"), Spectra= c((length(iden_without_data2)+length(unid_without_data2)),length(iden_without_data2),length(unid_without_data2)) )
+kable(df_without_data_all2,padding = 0)
+```
+
+```{r, echo=FALSE, fig.width=10 }
+df_without_data <- data.frame(Types = c("Identify", "Unidentify"), Spectra= c(length(iden_without_data),length(unid_without_data)) )
+
+df_without_data2 <- data.frame(Types = c("Identify", "Unidentify"), Spectra= c(length(iden_without_data2),length(unid_without_data2)) )
+
+
+a <- ggplot(transform(transform(df_without_data , Spectra=Spectra/sum(Spectra)), labPos=cumsum(Spectra)-Spectra/2), 
+            aes(x="", y = Spectra, fill = Types)) +
+    geom_bar(width = 1, stat = "identity") +
+    coord_polar(theta = "y") +
+    geom_text(aes(y=labPos, label=scales::percent(Spectra)), size=7)
+
+b <- ggplot(transform(transform(df_without_data2 , Spectra=Spectra/sum(Spectra)), labPos=cumsum(Spectra)-Spectra/2), 
+            aes(x="", y = Spectra, fill = Types)) +
+    geom_bar(width = 1, stat = "identity") +
+    coord_polar(theta = "y") +
+    geom_text(aes(y=labPos, label=scales::percent(Spectra)), size=7)
+
+grid.arrange(a, b, ncol=2)
+
+```
+
+### **Number of modifications: **
+#### **Release 1**
+
+```{r, echo=FALSE}
+
+#**Modifications**: 
+
+modifications <- read.delim("/nfs/nobackup/pride/cluster-prod/archive_spectra/cache/modifications_ide_table.txt", header = TRUE)
+#modifications <- read.delim("~/Dropbox/Script_R_Cambridge/Script2/tablas/modifications_ide_table.txt", header = TRUE)
+
+colnames(modifications) <- c("Modifications", "Frequency")
+modifications <- modifications[order(modifications$Modifications),] 
+
+modifications <- cbind(modifications[1:(nrow(modifications)/2),], modifications[((nrow(modifications)/2)+1):nrow(modifications),]) 
+#modifications2 <- cbind(modifications2[1:(nrow(modifications2)/2),],modifications2[((nrow(modifications2)/2)+1):nrow(modifications2),])
+
+cat("There are",nrow(modifications), "modifications different.")
+cat("The number of modifications is:", sum(modifications$Frequency))
+kable(modifications, row.names = FALSE, padding = 0)
+```
+
+#### **Release 2**
+
+```{r, echo=FALSE}
+
+cat("There are",nrow(modifications), "modifications different.")
+cat("The number of modifications is:", sum(modifications$Frequency))
+
+Kable(modifications, row.names = FALSE, padding = 0)
+
+
+```
+
+### **Sequences identified** 
+
+```{r, include=FALSE}
+
+#Sequences
+sequences<-fread(path.expand("/nfs/nobackup/pride/cluster-prod/archive_spectra/cache/sequences_ide_table.txt"), sep="auto", header = FALSE)
+#sequences<-fread(path.expand("~/Dropbox/Script_R_Cambridge/Script2/tablas/sequences_ide_table.txt"), sep="auto", header = FALSE)
+colnames(sequences) <- c("Sequences", "Frequency")
+
+```
+
+#### **Release 1**
+
+```{r, echo=FALSE}
+cat("There are",nrow(sequences), "sequences different.")
+cat("The number of sequences is:", sum(sequences$Frequency))
+```
+
+#### **Release 2**
+
+```{r, echo=FALSE}
+cat("There are",nrow(sequences), "sequences different.")
+cat("The number of sequences is:", sum(sequences$Frequency))
+```
+
+### **Spectrum**
+#### **Release 1**
+
+```{r, echo=FALSE}
+
+#Spectrum
+Spectrum <- read.delim("/nfs/nobackup/pride/cluster-prod/archive_spectra/cache/spectrum_table.txt", header = FALSE)
+#Spectrum <- read.delim("~/Dropbox/Script_R_Cambridge/Script2/tablas/spectrum_table.txt", header = FALSE)
+
+
+ cat("The number of spectrum identified is:", Spectrum$V1)
+ cat("The number of spectrum unidentified is:", Spectrum$V2)
+
+```
+
+#### **Release 2**
+
+```{r, echo=FALSE}
+
+#Spectrum
+Spectrum <- read.delim("/nfs/nobackup/pride/cluster-prod/archive_spectra/cache/spectrum_table.txt", header = FALSE)
+#Spectrum <- read.delim("~/Dropbox/Script_R_Cambridge/Script2/tablas/spectrum_table.txt", header = FALSE)
+
+
+ cat("The number of spectrum identified is:", Spectrum$V1)
+ cat("The number of spectrum unidentified is:", Spectrum$V2)
+
+```
+
+### **Taxonomy** 
+#### **Release 1**
+
+```{r, echo=FALSE, results='asis'}
+
+#Taxonomy
+taxonomy_ide <- read.delim("/nfs/nobackup/pride/cluster-prod/archive_spectra/cache/taxonomy_ide_table.txt", header = FALSE)
+#taxonomy_ide <- read.delim("~/Dropbox/Script_R_Cambridge/Script2/tablas/taxonomy_ide_table.txt", header = FALSE)
+
+colnames(taxonomy_ide) <- c("Taxonomy", "Frequency")
+
+taxonomy_ide <- taxonomy_ide[order(-taxonomy_ide$Frequency),] 
+
+taxonomy_ide <- cbind(taxonomy_ide[1:(nrow(taxonomy_ide)/2),], taxonomy_ide[((nrow(taxonomy_ide)/2)+1):nrow(taxonomy_ide),]) 
+
+kable(taxonomy_ide, row.names = FALSE, padding = 0)
+
+```
+
+#### **Release 2**
+
+```{r, echo=FALSE, results='asis'}
+taxonomy_unide <- read.delim("/nfs/nobackup/pride/cluster-prod/archive_spectra/cache/taxonomy_unide_table.txt", header = FALSE)
+#taxonomy_unide <- read.delim("~/Dropbox/Script_R_Cambridge/Script2/tablas/taxonomy_unide_table.txt", header = FALSE)
+colnames(taxonomy_unide) <- c("Taxonomy", "Frequency")
+taxonomy_unide <- taxonomy_unide[order(-taxonomy_unide$Frequency),] 
+taxonomy_unide <- cbind(taxonomy_unide[1:(nrow(taxonomy_unide)/2),], taxonomy_ide[((nrow(taxonomy_unide)/2)+1):nrow(taxonomy_unide),]) 
+kable(taxonomy_unide, row.names = FALSE, padding = 0)
+
+```
+
+### **Number of peptides**
+
+```{r}
+
+nrow(modifications_ide_table)
+
+#Create a data frame with the data obtained: 
+df.test <- data.frame(Types = c("Total", "Identify", "Unidentify" ), Spectra= c((length(file_iden)+length(file_unide)), length(file_iden),length(file_unide)))
+
+df.test2 <- data.frame(Types = c("Total", "Identify", "Unidentify"), Spectra= c((length(file_iden2)+length(file_unide2)), length(file_iden2),length(file_unide2)))
+
+kable(df.test, padding = 0)
+
+
+
+
+```
+
+
+
+
+
+
+
