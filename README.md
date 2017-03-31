@@ -2,8 +2,8 @@
 
 ## QC for MGF files
 
-The script for the QC of the MGF files ( Files obtained after the import of Data from PRIDE Archive) is in this repo in github(https://github.com/PRIDE-Cluster/pride-cluster-qc/tree/master/QC_Export_MGF).
-This QC is made by different script that must be runned orderly. Firstly: Counter_files.py and .Rmd. In order to facilitate this, a script has been created in bash that automatically executes these scripts.
+The script for the QC of the MGF files ( Files obtained after the import of Data from PRIDE Archive) is in this repository in github(https://github.com/PRIDE-Cluster/pride-cluster-qc/tree/master/QC_Export_MGF).
+This QC is consists of different scripts that must be run orderly. Firstly: Counter_files.py and, Secondly .Rmd. In order to facilitate this, a script has been created in bash that automatically executes these scripts.
 These scripts must be in the folder /nfs/nobackup/pride/cluster-prod/archive_spectra to be run. The path of the folder with the data generated from the current release should be changed inside the scripts.
 The output file will be a html file with the following informations
    -  Number of peptides in both releases (Identified, unidentified).
@@ -38,9 +38,9 @@ To run the perl script just type:
 
 ## QC for Peptides Report
 
-The script for the Peptides Report (.tsv files) is in this repo in github(https://github.com/PRIDE-Cluster/pride-cluster-qc/tree/master/QC_Peptide_Reports).
+The script for the Peptides Report (.tsv files) is in this repository in github(https://github.com/PRIDE-Cluster/pride-cluster-qc/tree/master/QC_Peptide_Reports).
 
-Information about: This pipeline generate a html file with the following information:
+Information about: This pipeline generate an html file with the following information:
 
   - Repeated Sequences Results: This should be always 0.
   - Number of peptides and their increase or decrease.
